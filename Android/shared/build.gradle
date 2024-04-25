@@ -1,0 +1,106 @@
+plugins {
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.jetbrainsKotlinAndroid)
+    id 'org.mozilla.rust-android-gradle.rust-android'
+}
+
+android {
+    namespace 'com.example.planar.shared'
+    compileSdk 34
+
+    ndkVersion '27.0.11718014'
+
+    defaultConfig {
+        minSdk 34
+        targetSdk 34
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += "${projectDir}/../../shared_types/generated/java"
+    }
+}
+
+dependencies {
+    implementation "net.java.dev.jna:jna:5.13.0@aar"
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+}
+
+apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
+
+cargo {
+    module = "../.."
+    libname = "shared"
+    // these are the four recommended targets for Android that will ensure your library works on all mainline android devices
+    // make sure you have included the rust toolchain for each of these targets: \
+    // `rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android`
+    targets = ["arm", "arm64", "x86", "x86_64"]
+    extraCargoBuildArguments = ['--package', 'shared']
+}
+
+afterEvaluate {
+    // The `cargoBuild` task isn't available until after evaluation.
+    android.libraryVariants.configureEach { variant ->
+        def productFlavor = ""
+        variant.productFlavors.each {
+            productFlavor += "${it.name.capitalize()}"
+        }
+        def buildType = "${variant.buildType.name.capitalize()}"
+
+        tasks.named("compileDebugKotlin") {
+            it.dependsOn(tasks.named("typesGen"), tasks.named("bindGen"))
+        }
+
+        tasks.named("generate${productFlavor}${buildType}Assets") {
+            it.dependsOn(tasks.named("cargoBuild"))
+        }
+    }
+}
+
+tasks.register('bindGen', Exec) {
+    def outDir = "${projectDir}/../../shared_types/generated/java"
+    workingDir "../../"
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine("cmd", "/c",
+                "cargo build -p shared && " + "target\\debug\\uniffi-bindgen generate shared\\src\\shared.udl " + "--language kotlin " + "--out-dir " + outDir.replace('/', '\\'))
+    } else {
+        commandLine("sh", "-c",
+                """\
+                cargo build -p shared && \
+                target/debug/uniffi-bindgen generate shared/src/shared.udl \
+                --language kotlin \
+                --out-dir $outDir
+                """)
+    }
+}
+
+tasks.register('typesGen', Exec) {
+    workingDir "../../"
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine("cmd", "/c", "cargo build -p shared_types")
+    } else {
+        commandLine("sh", "-c", "cargo build -p shared_types")
+    }
+}
