@@ -44,31 +44,38 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun View(core: Core = viewModel()) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp),
     ) {
-        Text(text = (core.view?.count ?: "0").toString(), modifier = Modifier.padding(10.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        //Left Button
+        Button(
+            onClick = { core.update(Event.Increment()) },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) { Text(text = "Increment", color = Color.White) }
+        //Center Image
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+        ) {
+            core.view?.result?.let { Text(text = it, color = Color.White, fontSize = 30.sp, modifier = Modifier.padding(10.dp)) }
             Button(
                 onClick = { core.update(Event.Reset()) }, colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error
                 )
             ) { Text(text = "Reset", color = Color.White) }
-            Button(
-                onClick = { core.update(Event.Increment()) }, colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) { Text(text = "Increment", color = Color.White) }
-            Button(
-                onClick = { core.update(Event.Decrement()) }, colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                )
-            ) { Text(text = "Decrement", color = Color.White) }
         }
+        //Right Button
+        Button(
+            onClick = { core.update(Event.Decrement()) },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+        ) { Text(text = "Decrement", color = Color.White) }
     }
 }
 

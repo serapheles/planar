@@ -1,33 +1,27 @@
 use crux_core::{render::Render, App};
+use crux_kv::{KeyValue, KeyValueOutput};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub enum Event {
     Increment,
     Decrement,
-    Reset,}
+    Reset,
+    Initialize,
+    Read,
+    Write,
+    Set(KeyValueOutput),
+}
 
 #[derive(Default)]
 pub struct Model {
-    inner: Bag,
-    count: isize,
-}
-
-pub struct Bag {
-    count: isize,
-}
-
-impl Default for Bag {
-    fn default() -> Bag {
-        Bag {
-            count: -1,
-        }
-    }
+    value: i32,
+    count: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct ViewModel {
-    pub count: String,
+    pub result: String,
 }
 
 #[cfg_attr(feature = "typegen", derive(crux_core::macros::Export))]
@@ -35,6 +29,7 @@ pub struct ViewModel {
 #[effect(app = "Planar")]
 pub struct Capabilities {
     render: Render<Event>,
+    key_value: KeyValue<Event>,
 }
 
 #[derive(Default)]
@@ -46,11 +41,31 @@ impl App for Planar {
     type ViewModel = ViewModel;
     type Capabilities = Capabilities;
 
+
     fn update(&self, event: Self::Event, model: &mut Self::Model, caps: &Self::Capabilities) {
         match event {
-            Event::Increment => model.count += 2,
-            Event::Decrement => model.count -= 3,
-            Event::Reset => model.count = 0,
+            Event::Increment => model.count += "+",
+            Event::Decrement => model.count += "-",
+            Event::Reset => model.count = "0".parse().unwrap(),
+            Event::Initialize => {model.count = "C".parse().unwrap()}
+
+            Event::Write => {
+                caps.key_value
+                    .write("test", 42i32.to_ne_bytes().to_vec(), Event::Set);
+            }
+            Event::Set(KeyValueOutput::Write(_success)) => {
+                caps.render.render()
+            }
+            Event::Read => caps.key_value.read("test", Event::Set),
+            Event::Set(KeyValueOutput::Read(value)) => {
+                if let Some(value) = value {
+                    // TODO: should KeyValueOutput::Read be generic over the value type?
+                    let (int_bytes, _rest) = value.split_at(std::mem::size_of::<i32>());
+                    model.value = i32::from_ne_bytes(int_bytes.try_into().unwrap());
+                }
+                caps.render.render()
+            }
+
         };
 
         caps.render.render();
@@ -58,7 +73,7 @@ impl App for Planar {
 
     fn view(&self, model: &Self::Model) -> Self::ViewModel {
         ViewModel {
-            count: format!("Count is: {}", model.inner.count),
+            result: format!("Count is: {}", model.count),
         }
     }
 }

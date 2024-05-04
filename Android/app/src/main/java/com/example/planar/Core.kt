@@ -11,10 +11,18 @@ import com.example.planar.shared_types.Event
 import com.example.planar.shared_types.Request
 import com.example.planar.shared_types.Requests
 import com.example.planar.shared_types.ViewModel
+import kotlinx.coroutines.launch
+
 
 class Core : androidx.lifecycle.ViewModel() {
     var view: ViewModel? by mutableStateOf(null)
         private set
+
+    init {
+        viewModelScope.launch {
+            update(Event.Initialize())
+        }
+    }
 
     fun update(event: Event) {
         val effects = processEvent(event.bincodeSerialize())
