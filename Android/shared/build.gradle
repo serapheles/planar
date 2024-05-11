@@ -8,10 +8,10 @@ android {
     namespace 'com.example.planar.shared'
     compileSdk 34
 
-    ndkVersion '27.0.11718014'
+    ndkVersion "26.3.11579264"
 
     defaultConfig {
-        minSdk 34
+        minSdk 30
         targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

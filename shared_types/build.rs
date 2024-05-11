@@ -1,5 +1,5 @@
 use crux_core::typegen::TypeGen;
-use shared::{Planar};
+use shared::Planar;
 use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {

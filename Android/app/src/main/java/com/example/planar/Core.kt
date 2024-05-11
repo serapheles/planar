@@ -1,8 +1,13 @@
 package com.example.planar
 
+import android.app.Activity
+import android.content.Context
+import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import com.example.planar.shared.processEvent
 import com.example.planar.shared.view
@@ -14,15 +19,9 @@ import com.example.planar.shared_types.ViewModel
 import kotlinx.coroutines.launch
 
 
-class Core : androidx.lifecycle.ViewModel() {
+open class Core : androidx.lifecycle.ViewModel() {
     var view: ViewModel? by mutableStateOf(null)
         private set
-
-    init {
-        viewModelScope.launch {
-            update(Event.Initialize())
-        }
-    }
 
     fun update(event: Event) {
         val effects = processEvent(event.bincodeSerialize())
