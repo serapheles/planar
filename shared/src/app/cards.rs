@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 const _PLANE_FILE: &[u8] = include_bytes!("../../../resources/planes.json");
 const _PHENOMENON_FILE: &[u8] = include_bytes!("../../../resources/phenomenon.json");
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Card {
     pub card_type: CardType,
     pub desc: String,
@@ -15,10 +15,19 @@ pub struct Card {
     pub name: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Copy)]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, Default)]
 pub enum CardType {
+    #[default]
     Plane,
     Phenomenon,
+}
+
+pub fn get_card_type(card_type: String) -> CardType {
+    if card_type == "Plane" {
+        CardType::Plane
+    } else {
+        CardType::Phenomenon
+    }
 }
 
 //Should return a result that is checked
@@ -57,15 +66,13 @@ pub fn _initialize_cards(card_type: CardType){
     {
         let mut iter = IntoIterator::into_iter(card_lines);
         //Untested since changes, may not end (or work) properly.
-        loop {
-            let name;
-            match iter.next() {
-                Some(val) => name = val,
+        #[allow(clippy::while_let_loop)] loop {
+            let name = match iter.next() {
+                Some(val) => val,
                 None => break,
             };
-            let desc;
-            match iter.next() {
-                Some(val) => desc = val,
+            let desc = match iter.next() {
+                Some(val) => val,
                 None => break,
             };
             match card_type {
