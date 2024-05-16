@@ -1,4 +1,3 @@
-use shared::app::cards;
 
 fn main() {
     // cards::_initialize_cards(shared::cards::CardType::Plane);
