@@ -33,7 +33,7 @@ fun GamePage(core: Core, resourceHelper: ResourceHelper) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) { Text(text = "Roll Dice", color = Color.White) }
             Button(
-                onClick = { /*Do Something~*/ },
+                onClick = {core.update(Event.ShuffleActive())},
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) { Text(text = "Shuffle", color = Color.White) }
         }
@@ -53,21 +53,16 @@ fun GamePage(core: Core, resourceHelper: ResourceHelper) {
                     .fillMaxSize()
                     .weight(1f)
             )
-            Column{
-                Button(
-                    onClick = { /*Do Something~*/ },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) { Text(text = "Planeswalk", color = Color.White) }
-                Button(
-                    onClick = { /*Do Something~*/ },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) { Text(text = "Oh shit, go back", color = Color.White) }
-            }
         }
-        //Right Button
-        Button(
-            onClick = { core.update(Event.Initialize()) },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
-        ) { Text(text = "Read", color = Color.White) }
+        Column{
+            Button(
+                onClick = {core.update(Event.NextCard())},
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) { Text(text = "Planeswalk", color = Color.White) }
+            Button(
+                onClick = {core.update(Event.PreviousCard())},
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) { Text(text = "Oh shit, go back", color = Color.White) }
+        }
     }
 }

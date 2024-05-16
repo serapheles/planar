@@ -1,6 +1,7 @@
 package com.example.planar
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewModelScope
 import com.example.planar.shared_types.Event
 import com.example.planar.ui.theme.PlanarTheme
+import com.novi.serde.Unsigned
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +22,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.d("Main Activity", "Pre-core call")
         QuickCore(getPath(), helper)
         setContent {
             PlanarTheme {
@@ -53,7 +55,7 @@ class QuickCore(s: String, helper: ResourceHelper) : Core() {
 
             for (entry in helper.getSequence()) {
                 //Try serializing?
-                update(Event.SetImage(entry.key, entry.value.toByte()))
+                update(Event.SetImage(entry.key, entry.value as @Unsigned Byte?))
             }
         }
     }

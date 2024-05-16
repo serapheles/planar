@@ -11,7 +11,7 @@ pub struct Deck{
 
 impl Deck {
 
-    pub(crate) fn add_card(&mut self, card: Card){
+    pub(crate) fn _add_card(&mut self, card: Card){
         self.deck.push_back(card);
     }
 
@@ -34,6 +34,14 @@ impl Deck {
     pub(crate) fn next_card(&mut self){
         if !self.deck.is_empty() {
             self.deck.rotate_left(1)
+        }
+    }
+
+    //This is way less efficient than keeping track of the current card and using get() on the top
+    //card call; fix later.
+    pub(crate) fn previous_card(&mut self){
+        if !self.deck.is_empty() {
+            self.deck.rotate_right(1)
         }
     }
 
