@@ -1,8 +1,10 @@
 package com.example.planar
 
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -14,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-//import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.planar.shared_types.Event
 
@@ -27,13 +29,17 @@ fun GamePage(core: Core, resourceHelper: ResourceHelper) {
             .fillMaxSize()
             .padding(10.dp),
     ) {
-        Column {
+        Column(
+            verticalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier
+                .fillMaxHeight()
+        ) {
             Button(
                 onClick = { /*Do Something~*/ },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) { Text(text = "Roll Dice", color = Color.White) }
             Button(
-                onClick = {core.update(Event.ShuffleActive())},
+                onClick = { core.update(Event.ShuffleActive()) },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) { Text(text = "Shuffle", color = Color.White) }
         }
@@ -54,15 +60,19 @@ fun GamePage(core: Core, resourceHelper: ResourceHelper) {
                     .weight(1f)
             )
         }
-        Column{
+        Column(
+            verticalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier
+                .fillMaxHeight()
+        ) {
             Button(
-                onClick = {core.update(Event.NextCard())},
+                onClick = { core.update(Event.NextCard()) },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) { Text(text = "Planeswalk", color = Color.White) }
+            ) { Text(text = "Forward", color = Color.White) }
             Button(
-                onClick = {core.update(Event.PreviousCard())},
+                onClick = { core.update(Event.PreviousCard()) },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) { Text(text = "Oh shit, go back", color = Color.White) }
+            ) { Text(text = "Rewind", color = Color.White) }
         }
     }
 }

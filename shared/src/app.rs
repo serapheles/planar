@@ -21,14 +21,15 @@ fn native_activity_create() {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Event {
-    Initialize,
+    Initialize(String),
     AddDeckToDB,
     GetDeckFromDB(String),
     NextCard,
     PreviousCard,
-    SetDatabase(String),
+    SetDatabase,
     SetImage(String, u8),
     ShuffleActive,
+    None,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -130,7 +131,7 @@ fn ensure_card_db(path: &str) -> Result<(), Box<dyn Error>>{
             )",
             (),
         )?;
-        
+        log::warn!("card_db created.");
         let cards: Vec<Card> = get_card_vec();
         for card in cards {
             let card_type = match card.card_type {
@@ -209,10 +210,12 @@ impl App for Planar {
         // log::debug!("Update: {event:?}. Model: {model:?}");
 
         match event {
-            Event::Initialize => {
+            Event::Initialize(path) => {
                 //Should probably set the database path here as well.
                 log::info!("Starting Crux logger");
                 native_activity_create();
+                model.base_path = path;
+                Self.update(Event::SetDatabase, model, caps);
                 //May want to ensure there isn't an active deck first.
                 model.active_deck = set_default_deck();
                 log::info!("Set default deck.");
@@ -251,8 +254,15 @@ impl App for Planar {
                 caps.render.render();
             }
             //This should probably be ensuring the card db as well
-            Event::SetDatabase(val) => {
-                model.base_path = val;
+            Event::SetDatabase => {
+                match ensure_card_db(&model.base_path) {
+                    Ok(_) => {
+                        log::info!("Deck database assured.")
+                    }
+                    Err(err) => {
+                        log::error!("Failed to ensure deck database: {}", err);
+                    }
+                }
                 match ensure_deck_db(&model.base_path) {
                     Ok(_) => {
                         log::info!("Deck database assured.")
@@ -277,6 +287,7 @@ impl App for Planar {
                 //Not entirely sure if this needs to re-render.
                 caps.render.render();
             }
+            Event::None => {caps.render.render();}
         };
     }
 

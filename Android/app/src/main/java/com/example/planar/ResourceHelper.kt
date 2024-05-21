@@ -3,7 +3,7 @@ package com.example.planar
 //Conceptually seems like it could/should be a data class, but I don't benefit from the auto-generated
 //code, nor do I want a constructor.
 class ResourceHelper {
-    private val resourceMap = HashMap<String, Any>()
+    private val resourceMap = HashMap<String, Int>()
 
     init {
         //Planes
@@ -161,11 +161,11 @@ class ResourceHelper {
         resourceMap["Unleash the Flux"] = R.drawable.unleash_the_flux
     }
 
-    fun getImage(name: String): Any {
+    fun getImage(name: String): Int {
         return resourceMap.getOrDefault(name, R.drawable.cat)
     }
 
-    fun getSequence(): Sequence<Map.Entry<String, Any>> {
+    fun getSequence(): Sequence<Map.Entry<String, Int>> {
         return resourceMap.asSequence()
     }
 }

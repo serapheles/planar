@@ -13,7 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewModelScope
 import com.example.planar.shared_types.Event
 import com.example.planar.ui.theme.PlanarTheme
-import com.novi.serde.Unsigned
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -49,14 +48,12 @@ class MainActivity : ComponentActivity() {
 class QuickCore(s: String, helper: ResourceHelper) : Core() {
     init {
         viewModelScope.launch {
-            update(Event.Initialize())
-            update(Event.SetDatabase(s))
-
-
-            for (entry in helper.getSequence()) {
-                //Try serializing?
-                update(Event.SetImage(entry.key, entry.value as @Unsigned Byte?))
-            }
+            update(Event.Initialize(s))
+            update(Event.None())
+//            for (entry in helper.getSequence()) {
+//                //Try serializing?
+//                update(Event.SetImage(entry.key, entry.value.toByte()))
+//            }
         }
     }
 }
