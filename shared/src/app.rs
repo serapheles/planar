@@ -45,7 +45,6 @@ pub struct ViewModel {
 
 #[cfg_attr(feature = "typegen", derive(crux_core::macros::Export))]
 #[derive(crux_core::macros::Effect)]
-#[effect(app = "Planar")]
 pub struct Capabilities {
     render: Render<Event>,
     //Pretty sure I should make the db stuff a capability
@@ -72,7 +71,7 @@ fn add_deck_to_db(path: &str, deck_name: &str, deck: Deck) -> Result<(), Box<dyn
 //Gets the information for a card from the database and creates an object for it.
 //Honestly may be better to load all the cards in a datastructure at load and pull from there
 //Currently sets all images to empty strings, because I'm not sure how I want to handle that field
-fn get_card_from_db(path: &str, card_name: &str) -> Result<Card,  Box<dyn Error>>{
+fn _get_card_from_db(path: &str, card_name: &str) -> Result<Card,  Box<dyn Error>>{
     let connection = Connection::open(path)?;
     let mut statement = connection.prepare("SELECT * FROM card_db WHERE name=?1")?;
 
@@ -306,7 +305,7 @@ impl App for Planar {
 #[cfg(test)]
 mod tests {
     use std::collections::VecDeque;
-    use super::{add_deck_to_db, ensure_card_db, ensure_deck_db, get_card_from_db};
+    use super::{add_deck_to_db, ensure_card_db, ensure_deck_db, _get_card_from_db};
     use crate::app::deck::Deck;
     use crate::cards::get_card_vec;
 
@@ -318,7 +317,7 @@ mod tests {
             Err(err) => {println!("Error when calling card_db setup: {}", err)}
         }
 
-        match get_card_from_db(path, "Academy at Tolaria West"){
+        match _get_card_from_db(path, "Academy at Tolaria West"){
             Ok(x) => {println!("Card found: {}", x.name)}
             Err(err) => {println!("Error getting card: {}", err)}
         }

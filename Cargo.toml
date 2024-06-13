@@ -7,10 +7,10 @@ authors = ["Kyle Potempa"]
 edition = "2021"
 repository = "N/A"
 license = "Apache-2.0"
-keywords = ["crux", "crux_core", "cross-platform-ui", "ffi", "wasm"]
+keywords = ["crux", "crux_core", "cross-platform-ui", "ffi"]
 rust-version = "1.66"
 
 [workspace.dependencies]
-anyhow = "1.0.83"
-serde = "1.0.201"
-crux_core = "0.7"
+anyhow = "1.0.86"
+serde = "1.0.202"
+crux_core = "0.8"
